@@ -16,26 +16,48 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Source+Sans+3:wght@400;600&display=swap');
 
-html, body, [class*="css"] { font-family: 'Source Sans 3', sans-serif; }
-h1, h2, h3 { font-family: 'Playfair Display', serif; }
-.stApp { background: #f7f4ef; }
+html, body, [class*="css"] { font-family: 'Source Sans 3', sans-serif; color: #1a1a1a; }
+h1, h2, h3 { font-family: 'Playfair Display', serif; color: #1a1a1a; }
+
+/* White app background so all Streamlit text is readable */
+.stApp { background: #ffffff; }
+
+/* Main content wrapper */
+[data-testid="stAppViewContainer"] { background: #ffffff; }
+[data-testid="block-container"] { background: #ffffff; padding-top: 2rem; }
+
+/* Inputs */
+.stTextInput label { color: #1a1a1a !important; font-weight: 600; }
+.stTextInput input { color: #1a1a1a !important; background: #f9f9f9 !important; border: 1px solid #ccc !important; }
+
+/* Subheader / markdown text */
+.stMarkdown p, .stMarkdown li { color: #1a1a1a; }
+
 .register-header {
-    background: #1a1a2e; color: #e8d5b0;
-    padding: 2rem 2.5rem; border-radius: 12px;
-    margin-bottom: 2rem; border-left: 6px solid #c9a84c;
+    background: #1a1a2e;
+    color: #e8d5b0;
+    padding: 2rem 2.5rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    border-left: 6px solid #c9a84c;
 }
-.register-header h1 { margin: 0; font-size: 2rem; letter-spacing: 1px; color: #e8d5b0; }
-.register-header p  { margin: 0.4rem 0 0; color: #a89060; font-size: 0.95rem; }
+.register-header h1 { margin: 0; font-size: 2rem; letter-spacing: 1px; color: #e8d5b0 !important; }
+.register-header p  { margin: 0.4rem 0 0; color: #c8aa70; font-size: 0.95rem; }
+
 .success-box {
     background: #d4edda; border: 1px solid #28a745;
     border-radius: 8px; padding: 0.75rem 1rem;
-    color: #155724; font-weight: 600; margin-top: 0.5rem;
+    color: #155724 !important; font-weight: 600; margin-top: 0.5rem;
 }
 .error-box {
     background: #f8d7da; border: 1px solid #dc3545;
     border-radius: 8px; padding: 0.75rem 1rem;
-    color: #721c24; font-weight: 600; margin-top: 0.5rem;
+    color: #721c24 !important; font-weight: 600; margin-top: 0.5rem;
 }
+
+/* Dataframe text */
+[data-testid="stDataFrame"] { color: #1a1a1a; }
+
 div[data-testid="stSidebar"] { display: none; }
 </style>
 """, unsafe_allow_html=True)
