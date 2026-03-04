@@ -273,30 +273,43 @@ if st.session_state.confirmed_student:
     if s.get("middle_names"):
         full_name += " " + s["middle_names"]
 
+    card_style = """
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        border: 1px solid #c9a84c;
+        border-radius: 14px;
+        padding: 2rem 2.5rem;
+        margin-top: 1rem;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+        border-top: 4px solid #c9a84c;
+    """
+    title_style = "font-family: 'Playfair Display', serif; color: #e8d5b0; font-size: 1.15rem; margin: 0 0 1.5rem; letter-spacing: 0.5px;"
+    row_style   = "display: flex; justify-content: space-between; align-items: center; padding: 0.65rem 0; border-bottom: 1px solid rgba(201,168,76,0.2);"
+    row_last    = "display: flex; justify-content: space-between; align-items: center; padding: 0.65rem 0;"
+    label_style = "color: #c8aa70; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase;"
+    value_style = "color: #ffffff; font-size: 1rem; font-weight: 600; text-align: right;"
+    matric_style= "font-family: 'Courier New', monospace; background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.4); border-radius: 6px; padding: 0.2rem 0.6rem; color: #e8d5b0; letter-spacing: 2px;"
+    footer_style= "margin-top: 1.2rem; padding-top: 1rem; border-top: 1px solid rgba(201,168,76,0.25); color: #c8aa70; font-size: 0.8rem; text-align: center; font-style: italic;"
+
     st.markdown(f"""
-<div class="confirm-card">
-    <div class="confirm-card-title"><span>✅</span> Registration Successful — Please verify your details</div>
-
-    <div class="confirm-row">
-        <span class="confirm-label">Surname</span>
-        <span class="confirm-value">{s['surname']}</span>
+<div style="{card_style}">
+    <p style="{title_style}">✅ Registration Successful — Please verify your details</p>
+    <div style="{row_style}">
+        <span style="{label_style}">Surname</span>
+        <span style="{value_style}">{s['surname']}</span>
     </div>
-    <div class="confirm-row">
-        <span class="confirm-label">Other Names</span>
-        <span class="confirm-value">{full_name}</span>
+    <div style="{row_style}">
+        <span style="{label_style}">Other Names</span>
+        <span style="{value_style}">{full_name}</span>
     </div>
-    <div class="confirm-row">
-        <span class="confirm-label">Matric Number</span>
-        <span class="confirm-value"><span class="confirm-matric">{s['matric_no']}</span></span>
+    <div style="{row_style}">
+        <span style="{label_style}">Matric Number</span>
+        <span style="{value_style}"><span style="{matric_style}">{s['matric_no']}</span></span>
     </div>
-    <div class="confirm-row">
-        <span class="confirm-label">Registered At</span>
-        <span class="confirm-value">{s['registered_at']}</span>
+    <div style="{row_last}">
+        <span style="{label_style}">Registered At</span>
+        <span style="{value_style}">{s['registered_at']}</span>
     </div>
-
-    <div class="confirm-footer">
-        🔒 This card is only visible to you. Please confirm the details above are correct before leaving this page.
-    </div>
+    <div style="{footer_style}">🔒 This card is only visible to you. Please confirm the details above are correct before leaving this page.</div>
 </div>
 """, unsafe_allow_html=True)
 
