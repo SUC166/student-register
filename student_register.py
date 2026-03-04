@@ -4,6 +4,10 @@ import requests
 import base64
 from datetime import datetime
 
+# ── Session state init ────────────────────────────────────────────────────────
+if "confirmed_student" not in st.session_state:
+    st.session_state.confirmed_student = None
+
 # ── Page config ──────────────────────────────────────────────────────────────
 st.set_page_config(
     page_title="Student Register",
@@ -53,6 +57,76 @@ h1, h2, h3 { font-family: 'Playfair Display', serif; color: #1a1a1a; }
     background: #f8d7da; border: 1px solid #dc3545;
     border-radius: 8px; padding: 0.75rem 1rem;
     color: #721c24 !important; font-weight: 600; margin-top: 0.5rem;
+}
+
+/* Confirmation card */
+.confirm-card {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 1px solid #c9a84c;
+    border-radius: 14px;
+    padding: 2rem 2.5rem;
+    margin-top: 1.5rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    position: relative;
+    overflow: hidden;
+}
+.confirm-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #c9a84c, #e8d5b0, #c9a84c);
+}
+.confirm-card-title {
+    font-family: 'Playfair Display', serif;
+    color: #e8d5b0;
+    font-size: 1.2rem;
+    margin: 0 0 1.5rem;
+    letter-spacing: 0.5px;
+}
+.confirm-card-title span {
+    display: inline-block;
+    margin-right: 0.5rem;
+}
+.confirm-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+}
+.confirm-row:last-child { border-bottom: none; }
+.confirm-label {
+    color: #c8aa70;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+}
+.confirm-value {
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: right;
+}
+.confirm-matric {
+    font-family: 'Courier New', monospace;
+    background: rgba(201,168,76,0.15);
+    border: 1px solid rgba(201,168,76,0.4);
+    border-radius: 6px;
+    padding: 0.25rem 0.6rem;
+    color: #e8d5b0;
+    letter-spacing: 2px;
+    font-size: 1rem;
+}
+.confirm-footer {
+    margin-top: 1.2rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(201,168,76,0.25);
+    color: #c8aa70;
+    font-size: 0.8rem;
+    text-align: center;
+    font-style: italic;
 }
 
 /* Dataframe text */
@@ -179,53 +253,53 @@ if submitted:
                 ))
                 ok, errmsg = save_to_github(students, sha)
                 if ok:
-                    msg_placeholder.markdown(
-                        f"<div class='success-box'>✅ {surname.strip().title()}, {first_name.strip().title()} added successfully!</div>",
-                        unsafe_allow_html=True
-                    )
-                    st.rerun()
+                    st.session_state.confirmed_student = {
+                        "surname":      surname.strip().title(),
+                        "first_name":   first_name.strip().title(),
+                        "middle_names": middle_names.strip().title(),
+                        "matric_no":    matric_clean,
+                        "registered_at": datetime.utcnow().strftime("%d %b %Y, %H:%M UTC"),
+                    }
                 else:
                     msg_placeholder.markdown(
                         f"<div class='error-box'>❌ GitHub save failed: {errmsg}</div>",
                         unsafe_allow_html=True
                     )
 
-# ── Display table ─────────────────────────────────────────────────────────────
-st.markdown("---")
-st.subheader("📋 Registered Students")
+# ── Confirmation card (shown only to the student who just registered) ─────────
+if st.session_state.confirmed_student:
+    s = st.session_state.confirmed_student
+    full_name = s["first_name"]
+    if s.get("middle_names"):
+        full_name += " " + s["middle_names"]
 
-col_refresh, _ = st.columns([1, 4])
-with col_refresh:
-    if st.button("🔄 Refresh"):
+    st.markdown(f"""
+<div class="confirm-card">
+    <div class="confirm-card-title"><span>✅</span> Registration Successful — Please verify your details</div>
+
+    <div class="confirm-row">
+        <span class="confirm-label">Surname</span>
+        <span class="confirm-value">{s['surname']}</span>
+    </div>
+    <div class="confirm-row">
+        <span class="confirm-label">Other Names</span>
+        <span class="confirm-value">{full_name}</span>
+    </div>
+    <div class="confirm-row">
+        <span class="confirm-label">Matric Number</span>
+        <span class="confirm-value"><span class="confirm-matric">{s['matric_no']}</span></span>
+    </div>
+    <div class="confirm-row">
+        <span class="confirm-label">Registered At</span>
+        <span class="confirm-value">{s['registered_at']}</span>
+    </div>
+
+    <div class="confirm-footer">
+        🔒 This card is only visible to you. Please confirm the details above are correct before leaving this page.
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+    if st.button("✔️ Confirmed — Register another student", use_container_width=True):
+        st.session_state.confirmed_student = None
         st.rerun()
-
-students, _ = load_from_github()
-if students is None:
-    st.error("Could not load data from GitHub.")
-elif not students:
-    st.info("No students registered yet.")
-else:
-    import pandas as pd
-    rows = []
-    for i, s in enumerate(students, 1):
-        full = s["first_name"]
-        if s.get("middle_names"):
-            full += " " + s["middle_names"]
-        rows.append({
-            "S/N":           i,
-            "Surname":       s["surname"],
-            "Other Names":   full,
-            "Matric Number": s["matric_no"],
-        })
-    df = pd.DataFrame(rows)
-    st.dataframe(df, use_container_width=True, hide_index=True)
-    st.caption(f"Total students: **{len(students)}**")
-
-    csv = df.to_csv(index=False).encode("utf-8")
-    st.download_button(
-        label="⬇️ Download as CSV",
-        data=csv,
-        file_name="student_register.csv",
-        mime="text/csv",
-        use_container_width=True,
-    )
